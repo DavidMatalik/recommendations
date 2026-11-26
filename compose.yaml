@@ -31,6 +31,21 @@ services:
       db:
         condition: service_healthy
 
+  web:
+    image: node:26
+    working_dir: /app
+    command: sh -c "npm install -g pnpm@12.23.0 && pnpm install && pnpm dev --host"
+    environment:
+      CI: "true"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+      - pnpm-store:/root/.local/share/pnpm/store
+    depends_on:
+      - api
+
 volumes:
   db-data:
   pnpm-store:
