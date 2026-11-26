@@ -4,6 +4,7 @@ import { onBeforeUnmount, onMounted, ref, useTemplateRef } from "vue";
 import type { Book } from "./types";
 
 defineProps<{ book: Book }>();
+const emit = defineEmits<{ delete: [] }>();
 
 const expanded = ref(false);
 const clamped = ref(false);
@@ -70,6 +71,7 @@ onBeforeUnmount(() => observer.disconnect());
       <button
         type="button"
         aria-label="Buch löschen"
+        @click="emit('delete')"
         class="cursor-pointer rounded-lg p-2 text-muted transition hover:bg-canvas hover:text-danger"
       >
         <Trash2 :size="18" />

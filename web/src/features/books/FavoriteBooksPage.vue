@@ -6,8 +6,10 @@ import type { Book } from "./types";
 import AddBookDialog from "./AddBookDialog.vue";
 import { useAddBookDialog } from "./useAddBookDialog";
 import BookCard from "./BookCard.vue";
+import { useConfirm } from "@/composables/useConfirm";
 
 const addBook = useAddBookDialog();
+const confirm = useConfirm();
 
 const books = ref<Book[]>([]);
 const loading = ref(true);
@@ -33,6 +35,18 @@ onMounted(async () => {
 async function openAddDialog() {
   const book = await addBook();
   if (book) books.value.push(book);
+}
+
+async function deleteBook(book: Book) {
+  const confirmed = await confirm({
+    title: "Buch löschen?",
+    message: `„${book.title}“ wird endgültig gelöscht.`,
+    confirmLabel: "Löschen",
+  });
+  if (!confirmed) return;
+  const res = await fetch(`${apiUrl}/books/${book.id}`, { method: "DELETE" });
+  if (!res.ok) return alert(`Löschen fehlgeschlagen (HTTP ${res.status})`);
+  books.value = books.value.filter((b) => b.id !== book.id);
 }
 </script>
 
@@ -61,7 +75,12 @@ async function openAddDialog() {
     </div>
 
     <ul v-else class="flex flex-col gap-4">
-      <BookCard v-for="book in favorites" :key="book.id" :book="book" />
+      <BookCard
+        v-for="book in favorites"
+        :key="book.id"
+        :book="book"
+        @delete="deleteBook(book)"
+      />
     </ul>
 
     <AddBookDialog />
