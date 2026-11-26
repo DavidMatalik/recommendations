@@ -1,0 +1,13 @@
+# deps
+node_modules/
+
+# logs
+*.log
+
+# misc
+.DS_Store
+*.local
+*.tsbuildinfo
+
+# build
+dist/
