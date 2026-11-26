@@ -80,5 +80,12 @@ async function submit() {
         {{ submitting ? "Wird registriert…" : "Konto erstellen" }}
       </button>
     </form>
+
+    <p class="mt-6 text-center text-sm text-muted">
+      Schon ein Konto?
+      <RouterLink to="/login" class="font-medium text-accent hover:underline">
+        Anmelden
+      </RouterLink>
+    </p>
   </main>
 </template>
