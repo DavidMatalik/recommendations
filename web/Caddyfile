@@ -1,0 +1,43 @@
+# Replaces Railpack's default Caddyfile to also proxy /api to the API over
+# Railway's private network. API_URL e.g. http://api.railway.internal:3000
+{
+	admin off
+	persist_config off
+	auto_https off
+
+	log {
+		format json
+	}
+
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+:{$PORT:80} {
+	log {
+		format json
+	}
+
+	respond /health 200
+
+	handle /api/* {
+		reverse_proxy {$API_URL}
+	}
+
+	handle {
+		header {
+			X-Content-Type-Options "nosniff"
+			Referrer-Policy "strict-origin-when-cross-origin"
+			-Server
+		}
+
+		root * dist
+		encode gzip zstd
+		try_files {path} /index.html
+		file_server {
+			hide .git
+			hide .env*
+		}
+	}
+}
