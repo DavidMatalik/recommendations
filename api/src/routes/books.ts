@@ -1,15 +1,22 @@
+import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 import { db } from "../db/index.js";
-import { booksTable } from "../db/schema/book.js";
+import { booksTable, insertBookSchema, updateBookSchema } from "../db/schema/book.js";
+
+const idParam = zValidator(
+  "param",
+  z.object({ id: z.coerce.number().int().positive() }),
+);
 
 export const bookRoutes = new Hono()
   .get("/", async (c) => {
     const books = await db.select().from(booksTable);
     return c.json(books);
   })
-  .get("/:id", async (c) => {
-    const id = Number(c.req.param("id"));
+  .get("/:id", idParam, async (c) => {
+    const { id } = c.req.valid("param");
     const [book] = await db
       .select()
       .from(booksTable)
@@ -18,34 +25,25 @@ export const bookRoutes = new Hono()
     if (!book) return c.json({ error: "Book not found" }, 404);
     return c.json(book);
   })
-  .post("/", async (c) => {
-    const { title, author, status, freeText, aiSummary } = await c.req.json<{
-      title: string;
-      author: string;
-      status: "favorite" | "recommended" | "not_interested";
-      freeText: string;
-      aiSummary: string;
-    }>();
+  .post("/", zValidator("json", insertBookSchema), async (c) => {
     const [book] = await db
       .insert(booksTable)
-      .values({ title, author, status, freeText, aiSummary })
+      .values(c.req.valid("json"))
       .returning();
     return c.json(book, 201);
   })
-  .patch("/:id", async (c) => {
-    const id = Number(c.req.param("id"));
-    const { title, author, status, freeText, aiSummary } =
-      await c.req.json<Partial<typeof booksTable.$inferInsert>>();
+  .patch("/:id", idParam, zValidator("json", updateBookSchema), async (c) => {
+    const { id } = c.req.valid("param");
     const [book] = await db
       .update(booksTable)
-      .set({ title, author, status, freeText, aiSummary })
+      .set(c.req.valid("json"))
       .where(eq(booksTable.id, id))
       .returning();
     if (!book) return c.json({ error: "Book not found" }, 404);
     return c.json(book);
   })
-  .delete("/:id", async (c) => {
-    const id = Number(c.req.param("id"));
+  .delete("/:id", idParam, async (c) => {
+    const { id } = c.req.valid("param");
     const [book] = await db
       .delete(booksTable)
       .where(eq(booksTable.id, id))
