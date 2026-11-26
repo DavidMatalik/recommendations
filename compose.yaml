@@ -21,6 +21,8 @@ services:
     environment:
       CI: "true"
       DATABASE_URL: postgres://postgres:postgres@db:5432/books
+      BETTER_AUTH_SECRET: dev-only-secret-change-me-in-production-0123456789
+      BETTER_AUTH_URL: http://localhost:3000
     ports:
       - "3000:3000"
     volumes:
