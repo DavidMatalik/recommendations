@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@lucide/vue": "^1.80.0",
+    "better-auth": "^1.7.28",
     "vue": "^3.5.42",
     "vue-router": "^5.5.1"
   },
