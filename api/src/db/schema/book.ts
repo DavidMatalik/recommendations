@@ -1,5 +1,6 @@
 import { integer, pgTable, text, timestamp, pgEnum } from "drizzle-orm/pg-core";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
+import { user } from "./auth.js";
 
 export const timestamps = {
   updated_at: timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
@@ -19,6 +20,9 @@ export const booksTable = pgTable("books", {
   status: mediaStatusEnum(),
   freeText: text(),
   aiSummary: text(),
+  userId: text()
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   ...timestamps,
 });
 
