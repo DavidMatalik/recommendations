@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { BookHeart, Plus } from "@lucide/vue";
 import { computed, onMounted, ref } from "vue";
+import { apiUrl } from "@/api";
 import type { Book } from "./types";
+import AddBookDialog from "./AddBookDialog.vue";
+import { useAddBookDialog } from "./useAddBookDialog";
 import BookCard from "./BookCard.vue";
 
-const apiUrl = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+const addBook = useAddBookDialog();
 
 const books = ref<Book[]>([]);
 const loading = ref(true);
@@ -25,6 +28,12 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+// Adds a new book and appends it to the list.
+async function openAddDialog() {
+  const book = await addBook();
+  if (book) books.value.push(book);
+}
 </script>
 
 <template>
@@ -33,6 +42,7 @@ onMounted(async () => {
       <h1 class="my-1 font-serif text-4xl font-semibold">Lieblingsbücher</h1>
       <button
         type="button"
+        @click="openAddDialog()"
         class="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-soft transition hover:-translate-y-px hover:bg-accent-hover"
       >
         <Plus :size="18" />
@@ -53,5 +63,7 @@ onMounted(async () => {
     <ul v-else class="flex flex-col gap-4">
       <BookCard v-for="book in favorites" :key="book.id" :book="book" />
     </ul>
+
+    <AddBookDialog />
   </main>
 </template>
