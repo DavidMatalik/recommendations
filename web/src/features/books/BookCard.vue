@@ -1,20 +1,24 @@
 <script setup lang="ts">
 import { ChevronDown, Pencil, Trash2 } from "@lucide/vue";
-import { onBeforeUnmount, onMounted, ref, useTemplateRef } from "vue";
+import { onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
 import type { Book } from "./types";
 
-defineProps<{ book: Book }>();
-const emit = defineEmits<{ delete: [] }>();
+const props = defineProps<{ book: Book }>();
+const emit = defineEmits<{ edit: []; delete: [] }>();
 
 const expanded = ref(false);
 const clamped = ref(false);
 const freeTextEl = useTemplateRef("freeText");
 
 // Only offer the toggle when the text is actually cut off.
-const observer = new ResizeObserver(() => {
+function checkClamped() {
   const el = freeTextEl.value;
   if (el && !expanded.value) clamped.value = el.scrollHeight > el.clientHeight;
-});
+}
+
+// Re-check when the card is resized or the note is edited.
+const observer = new ResizeObserver(checkClamped);
+watch(() => props.book.freeText, checkClamped, { flush: "post" });
 
 onMounted(() => {
   if (freeTextEl.value) observer.observe(freeTextEl.value);
@@ -64,6 +68,7 @@ onBeforeUnmount(() => observer.disconnect());
       <button
         type="button"
         aria-label="Buch bearbeiten"
+        @click="emit('edit')"
         class="cursor-pointer rounded-lg p-2 text-muted transition hover:bg-canvas hover:text-ink"
       >
         <Pencil :size="18" />

@@ -3,12 +3,12 @@ import { BookHeart, Plus } from "@lucide/vue";
 import { computed, onMounted, ref } from "vue";
 import { apiUrl } from "@/api";
 import type { Book } from "./types";
-import AddBookDialog from "./AddBookDialog.vue";
-import { useAddBookDialog } from "./useAddBookDialog";
 import BookCard from "./BookCard.vue";
+import BookDialog from "./BookDialog.vue";
+import { useBookDialog } from "./useBookDialog";
 import { useConfirm } from "@/composables/useConfirm";
 
-const addBook = useAddBookDialog();
+const editBook = useBookDialog();
 const confirm = useConfirm();
 
 const books = ref<Book[]>([]);
@@ -31,12 +31,6 @@ onMounted(async () => {
   }
 });
 
-// Adds a new book and appends it to the list.
-async function openAddDialog() {
-  const book = await addBook();
-  if (book) books.value.push(book);
-}
-
 async function deleteBook(book: Book) {
   const confirmed = await confirm({
     title: "Buch löschen?",
@@ -48,6 +42,16 @@ async function deleteBook(book: Book) {
   if (!res.ok) return alert(`Löschen fehlgeschlagen (HTTP ${res.status})`);
   books.value = books.value.filter((b) => b.id !== book.id);
 }
+
+// Edits the given book, or adds a new one; the saved book replaces the old
+// one in place, or is appended.
+async function openBookDialog(book?: Book) {
+  const saved = await editBook(book);
+  if (!saved) return;
+  const index = books.value.findIndex((b) => b.id === saved.id);
+  if (index === -1) books.value.push(saved);
+  else books.value[index] = saved;
+}
 </script>
 
 <template>
@@ -56,7 +60,7 @@ async function deleteBook(book: Book) {
       <h1 class="my-1 font-serif text-4xl font-semibold">Lieblingsbücher</h1>
       <button
         type="button"
-        @click="openAddDialog()"
+        @click="openBookDialog()"
         class="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-full bg-accent px-6 py-3 font-semibold text-white shadow-soft transition hover:-translate-y-px hover:bg-accent-hover"
       >
         <Plus :size="18" />
@@ -79,10 +83,11 @@ async function deleteBook(book: Book) {
         v-for="book in favorites"
         :key="book.id"
         :book="book"
+        @edit="openBookDialog(book)"
         @delete="deleteBook(book)"
       />
     </ul>
 
-    <AddBookDialog />
+    <BookDialog />
   </main>
 </template>
