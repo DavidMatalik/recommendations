@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { X } from "@lucide/vue";
 import { computed, reactive, ref, useTemplateRef, watch } from "vue";
-import { apiUrl } from "@/api";
 import { bookDialog } from "./useBookDialog";
 
 const { options, settle, bind } = bookDialog;
@@ -52,10 +51,9 @@ async function submit() {
       freeText: form.freeText || null,
     };
     const res = await fetch(
-      book ? `${apiUrl}/books/${book.id}` : `${apiUrl}/books`,
+      book ? `/api/books/${book.id}` : "/api/books",
       {
         method: book ? "PATCH" : "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(book ? fields : { ...fields, status: "favorite" }),
       },

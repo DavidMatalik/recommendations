@@ -2,7 +2,6 @@
 import { BookHeart, LogOut, Plus } from "@lucide/vue";
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import { apiUrl } from "@/api";
 import { authClient } from "@/auth";
 import type { Book } from "./types";
 import BookCard from "./BookCard.vue";
@@ -24,7 +23,7 @@ const favorites = computed(() =>
 
 onMounted(async () => {
   try {
-    const res = await fetch(`${apiUrl}/books`, { credentials: "include" });
+    const res = await fetch("/api/books");
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     books.value = await res.json();
   } catch (e) {
@@ -41,10 +40,7 @@ async function deleteBook(book: Book) {
     confirmLabel: "Löschen",
   });
   if (!confirmed) return;
-  const res = await fetch(`${apiUrl}/books/${book.id}`, {
-    method: "DELETE",
-    credentials: "include",
-  });
+  const res = await fetch(`/api/books/${book.id}`, { method: "DELETE" });
   if (!res.ok) return alert(`Löschen fehlgeschlagen (HTTP ${res.status})`);
   books.value = books.value.filter((b) => b.id !== book.id);
 }

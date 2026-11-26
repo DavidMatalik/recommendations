@@ -22,7 +22,7 @@ services:
       CI: "true"
       DATABASE_URL: postgres://postgres:postgres@db:5432/books
       BETTER_AUTH_SECRET: dev-only-secret-change-me-in-production-0123456789
-      BETTER_AUTH_URL: http://localhost:3000
+      BETTER_AUTH_URL: http://localhost:5173
     ports:
       - "3000:3000"
     volumes:
@@ -39,6 +39,7 @@ services:
     command: sh -c "npm install -g pnpm@12.23.0 && pnpm install && pnpm dev --host"
     environment:
       CI: "true"
+      API_PROXY_TARGET: http://api:3000
     ports:
       - "5173:5173"
     volumes:

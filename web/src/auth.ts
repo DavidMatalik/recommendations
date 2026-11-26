@@ -1,7 +1,5 @@
 import { createAuthClient } from "better-auth/vue";
-import { apiUrl } from "@/api";
 
-export const authClient = createAuthClient({
-  baseURL: apiUrl,
-  fetchOptions: { credentials: "include" },
-});
+// The API is proxied under /api on the same origin (Vite in dev, Caddy in
+// production), so the client's defaults fit.
+export const authClient = createAuthClient();
