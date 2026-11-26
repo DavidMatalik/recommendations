@@ -21,7 +21,7 @@ const favorites = computed(() =>
 
 onMounted(async () => {
   try {
-    const res = await fetch(`${apiUrl}/books`);
+    const res = await fetch(`${apiUrl}/books`, { credentials: "include" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     books.value = await res.json();
   } catch (e) {
@@ -38,7 +38,10 @@ async function deleteBook(book: Book) {
     confirmLabel: "Löschen",
   });
   if (!confirmed) return;
-  const res = await fetch(`${apiUrl}/books/${book.id}`, { method: "DELETE" });
+  const res = await fetch(`${apiUrl}/books/${book.id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
   if (!res.ok) return alert(`Löschen fehlgeschlagen (HTTP ${res.status})`);
   books.value = books.value.filter((b) => b.id !== book.id);
 }

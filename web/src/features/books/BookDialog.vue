@@ -55,6 +55,7 @@ async function submit() {
       book ? `${apiUrl}/books/${book.id}` : `${apiUrl}/books`,
       {
         method: book ? "PATCH" : "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(book ? fields : { ...fields, status: "favorite" }),
       },
