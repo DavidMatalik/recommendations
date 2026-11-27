@@ -32,3 +32,7 @@
     @apply bg-canvas text-ink;
   }
 }
+
+@utility book-card {
+  @apply flex justify-between gap-4 rounded-xl border border-l-4 border-line border-l-accent bg-surface py-5 pr-5 pl-6 shadow-soft transition hover:-translate-y-0.5;
+}

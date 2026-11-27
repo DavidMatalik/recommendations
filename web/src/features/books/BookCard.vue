@@ -14,9 +14,7 @@ const { expanded, clamped } = useClamped(
 </script>
 
 <template>
-  <li
-    class="flex justify-between gap-4 rounded-xl border border-l-4 border-line border-l-accent bg-surface py-5 pr-5 pl-6 shadow-soft transition hover:-translate-y-0.5"
-  >
+  <li class="book-card">
     <div class="min-w-0">
       <h2 class="truncate font-serif text-xl font-semibold" :title="book.title">
         {{ book.title }}
