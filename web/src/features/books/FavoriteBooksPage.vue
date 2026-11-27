@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { BookHeart, LogOut, Plus } from "@lucide/vue";
+import { BookHeart, Plus } from "@lucide/vue";
 import { computed, onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import { authClient } from "@/auth";
 import type { Book } from "./types";
 import BookCard from "./BookCard.vue";
 import BookDialog from "./BookDialog.vue";
 import { useBookDialog } from "./useBookDialog";
+import AppNav from "@/components/AppNav.vue";
 import { useConfirm } from "@/composables/useConfirm";
 
-const router = useRouter();
 const editBook = useBookDialog();
 const confirm = useConfirm();
 
@@ -45,11 +43,6 @@ async function deleteBook(book: Book) {
   books.value = books.value.filter((b) => b.id !== book.id);
 }
 
-async function signOut() {
-  await authClient.signOut();
-  router.push("/login");
-}
-
 // Edits the given book, or adds a new one; the saved book replaces the old
 // one in place, or is appended.
 async function openBookDialog(book?: Book) {
@@ -62,19 +55,9 @@ async function openBookDialog(book?: Book) {
 </script>
 
 <template>
-  <main class="mx-auto max-w-2xl px-4 pt-6 pb-16">
-    <div class="flex justify-end">
-      <button
-        type="button"
-        class="inline-flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-muted transition hover:bg-surface hover:text-ink"
-        @click="signOut"
-      >
-        <LogOut :size="16" />
-        Abmelden
-      </button>
-    </div>
-
-    <header class="mt-2 mb-10 flex flex-col items-center text-center">
+  <AppNav />
+  <main class="mx-auto max-w-2xl px-4 pb-16">
+    <header class="mt-12 mb-10 flex flex-col items-center text-center">
       <h1 class="my-1 font-serif text-4xl font-semibold">Lieblingsbücher</h1>
       <button
         type="button"

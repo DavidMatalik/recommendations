@@ -4,4 +4,5 @@ export interface Book {
   author: string;
   status: "favorite" | "recommended" | "not_interested" | null;
   freeText: string | null;
+  aiSummary: string | null;
 }
