@@ -1,29 +1,16 @@
 <script setup lang="ts">
 import { ChevronDown, Pencil, Trash2 } from "@lucide/vue";
-import { onBeforeUnmount, onMounted, ref, useTemplateRef, watch } from "vue";
+import { useTemplateRef } from "vue";
+import { useClamped } from "@/composables/useClamped";
 import type { Book } from "./types";
 
 const props = defineProps<{ book: Book }>();
 const emit = defineEmits<{ edit: []; delete: [] }>();
 
-const expanded = ref(false);
-const clamped = ref(false);
-const freeTextEl = useTemplateRef("freeText");
-
-// Only offer the toggle when the text is actually cut off.
-function checkClamped() {
-  const el = freeTextEl.value;
-  if (el && !expanded.value) clamped.value = el.scrollHeight > el.clientHeight;
-}
-
-// Re-check when the card is resized or the note is edited.
-const observer = new ResizeObserver(checkClamped);
-watch(() => props.book.freeText, checkClamped, { flush: "post" });
-
-onMounted(() => {
-  if (freeTextEl.value) observer.observe(freeTextEl.value);
-});
-onBeforeUnmount(() => observer.disconnect());
+const { expanded, clamped } = useClamped(
+  [useTemplateRef("freeText")],
+  () => props.book.freeText,
+);
 </script>
 
 <template>
