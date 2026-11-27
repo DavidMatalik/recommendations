@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { auth } from "./auth.js";
 import { bookRoutes } from "./routes/books.js";
+import { recommendationRoutes } from "./routes/recommendations.js";
 
 // Builds the app; index.ts starts the server. Keeping them apart lets other
 // code import the app (e.g. RPC types, tests) without opening a port.
@@ -9,4 +10,5 @@ import { bookRoutes } from "./routes/books.js";
 export const app = new Hono()
   .basePath("/api")
   .on(["GET", "POST"], "/auth/*", (c) => auth.handler(c.req.raw))
-  .route("/books", bookRoutes);
+  .route("/books", bookRoutes)
+  .route("/recommendations", recommendationRoutes);
